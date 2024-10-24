@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДружбаNet 5.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #50c878;
+            --background-color: #f0f2f5;
+            --text-color: #1c1e21;
+            --card-background: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        nav button, .btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        nav button:hover, .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2rem auto;
+            gap: 2rem;
+        }
+        .sidebar {
+            width: 250px;
+        }
+        .content {
+            flex-grow: 1;
+        }
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+        .search-bar {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        .search-bar input {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        .search-bar button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            cursor: pointer;
+        }
+        .mood-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .mood-emoji {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .mood-emoji:hover {
+            transform: scale(1.2);
+        }
+        .friend-item, .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: background-color 0.3s;
+        }
+        .friend-item:hover, .chat-item:hover {
+            background-color: #f0f0f0;
+        }
+        .friend-item img, .chat-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+        .story-creator {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        .story-creator input {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        .story-creator button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            cursor: pointer;
+        }
+        .story {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        .story img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+        .notifications {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            z-index: 1000;
+        }
+        .notification {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: var(--box-shadow);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: var(--card-background);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 80%;
+            max-width: 600px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">ДружбаNet 5.0</div>
+            <nav>
+                <button onclick="showTab('home')"><i class="fas fa-home"></i> Главная</button>
+                <button onclick="showTab('profile')"><i class="fas fa-user"></i> Профиль</button>
+                <button onclick="showTab('messages')"><i class="fas fa-envelope"></i> Сообния</button>
+                <button onclick="showTab('notifications')"><i class="fas fa-bell"></i> Уведомления</button>
+                <button onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+                <button id="loginButton" onclick="showLoginForm()">Войти</button>
+                <button id="registerButton" onclick="showRegisterForm()">Регистрация</button>
+                <button id="logoutButton" onclick="logout()" style="display: none;">Выйти</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="card">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Поиск пользователей...">
+                    <button onclick="searchUsers()"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="searchResults"></div>
+            </div>
+            <div class="card">
+                <h3>Ваше настроение</h3>
+                <div class="mood-selector">
+                    <span class="mood-emoji" onclick="setMood('😊')">😊</span>
+                    <span class="mood-emoji" onclick="setMood('😎')">���</span>
+                    <span class="mood-emoji" onclick="setMood('😢')">😢</span>
+                    <span class="mood-emoji" onclick="setMood('😡')">😡</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Друзья</h3>
+                <div id="friendsList"></div>
+            </div>
+            <div class="card">
+                <h3>Чаты</h3>
+                <div id="chatList"></div>
+            </div>
+        </div>
+        <div class="content">
+            <div id="homeTab">
+                <div class="card story-creator">
+                    <input type="text" id="storyContent" placeholder="Что у вас нового?">
+                    <button onclick="createStory()">Опубликовать</button>
+                </div>
+                <div id="storiesContainer"></div>
+                <div id="postsContainer"></div>
+            </div>
+            <div id="profileTab" style="display: none;">
+                <div id="userProfile" class="card"></div>
+            </div>
+            <div id="messagesTab" style="display: none;">
+                <div id="chatContainer" class="card"></div>
+            </div>
+            <div id="notificationsTab" style="display: none;">
+                <div id="notificationsContainer" class="card"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notifications" id="notifications"></div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Вход</h2>
+            <input type="text" id="loginUsername" placeholder="Имя пользователя">
+            <input type="password" id="loginPassword" placeholder="Пароль">
+            <button onclick="login()">Войти</button>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Регистрация</h2>
+            <input type="text" id="registerUsername" placeholder="Имя пользователя">
+            <input type="password" id="registerPassword" placeholder="Пароль">
+            <input type="number" id="registerAge" placeholder="Возраст">
+            <button onclick="register()">Зарегистрироваться</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let users = [
+            {
+                username: 'admin',
+                password: 'admin123',
+                isAdmin: true,
+                isVerified: true,
+                age: 30,
+                icon: '👑',
+                friends: [],
+                friendRequests: [],
+                groups: [],
+                music: [],
+                posts: [],
+                notifications: [],
+                mood: '😊'
+            },
+            {
+                username: 'user',
+                password: 'user123',
+                isAdmin: false,
+                isVerified: false,
+                age: 25,
+                icon: '😊',
+                friends: [],
+                friendRequests: [],
+                groups: [],
+                music: [],
+                posts: [],
+                notifications: [],
+                mood: '😎'
+            }
+        ];
+        let posts = [];
+        let chats = {};
+        let stories = [];
+
+        function showTab(tabName) {
+            document.querySelectorAll('.content > div').forEach(tab => tab.style.display = 'none');
+            document.getElementById(`${tabName}Tab`).style.display = 'block';
+            if (tabName === 'profile' && currentUser) {
+                renderUserProfile(currentUser.username);
+            } else if (tabName === 'notifications' && currentUser) {
+                renderNotifications();
+            }
+        }
+
+        async function searchUsers() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                try {
+                    const users = await api.searchUsers(query, token);
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = users.map(user => `
+                        <div class="user-item" onclick="viewUserProfile('${user.username}')">
+                            <img src="https://via.placeholder.com/40" alt="${user.username}">
+                            <strong>${user.username} ${user.mood}</strong>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    showNotification('Ошибка при поиске пользователей');
+                }
+            }
+        }
+
+        async function setMood(mood) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                await api.updateMood(mood, token);
+                showNotification('Настроение обновлено');
+                // Обновите отображение настроения на странице
+            } catch (error) {
+                showNotification('Ошибка при обновлении настроения');
+            }
+        }
+
+        async function createStory() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('Пожалуйста, войдите в систему, чтобы создать исорию.');
+                return;
+            }
+            const content = document.getElementById('storyContent').value.trim();
+            if (content) {
+                try {
+                    await api.createPost(content, token);
+                    document.getElementById('storyContent').value = '';
+                    renderPosts();
+                    showNotification('История создана');
+                } catch (error) {
+                    showNotification('Ошибка при создании истории');
+                }
+            }
+        }
+
+        function renderStories() {
+            const storiesContainer = document.getElementById('storiesContainer');
+            storiesContainer.innerHTML = `
+                <h2>Истории</h2>
+                ${stories.map(story => `
+                    <div class="story">
+                        <img src="https://via.placeholder.com/40" alt="${story.author}">
+                        <div>
+                            <strong>${story.author} ${users.find(u => u.username === story.author).mood}</strong>
+                            <p>${story.content}</p>
+                            <small>${new Date(story.timestamp).toLocaleString()}</small>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function renderFriends() {
+            if (!currentUser) return;
+            const friendsList = document.getElementById('friendsList');
+            friendsList.innerHTML = currentUser.friends.map(friend => {
+                const friendUser = users.find(u => u.username === friend);
+                return `
+                    <div class="friend-item" onclick="viewUserProfile('${friend}')">
+                        <img src="https://via.placeholder.com/40" alt="${friend}">
+                        <div>
+                            <strong>${friend} ${friendUser.mood}</strong>
+                            <small>${friendUser.isOnline ? 'Онлайн' : 'Оффлайн'}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function renderChats() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const chats = await api.getChats(token);
+                const chatList = document.getElementById('chatList');
+                chatList.innerHTML = chats.map(chat => `
+                    <div class="chat-item" onclick="openChat('${chat.id}')">
+                        <img src="https://via.placeholder.com/40" alt="${chat.otherUser.username}">
+                        <div>
+                            <strong>${chat.otherUser.username} ${chat.otherUser.mood}</strong>
+                            <p>${chat.lastMessage ? chat.lastMessage.content.substring(0, 30) + '...' : 'Нет сообщений'}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                showNotification('Ошибка при загрузке чатов');
+            }
+        }
+
+        async function openChat(chatId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const messages = await api.getChatMessages(chatId, token);
+                const chatContainer = document.getElementById('chatContainer');
+                chatContainer.innerHTML = `
+                    <h2>Чат</h2>
+                    <div id="chatMessages"></div>
+                    <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                    <button onclick="sendMessage('${chatId}')">Отправить</button>
+                `;
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = messages.map(message => `
+                    <div class="message ${message.sender === currentUser.username ? 'sent' : 'received'}">
+                        <strong>${message.sender}:</strong> ${message.content}
+                    </div>
+                `).join('');
+            } catch (error) {
+                showNotification('Ошибка при загрузке сообщений');
+            }
+        }
+
+        async function sendMessage(chatId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            if (content) {
+                try {
+                    await api.sendMessage(chatId, content, token);
+                    messageInput.value = '';
+                    openChat(chatId);
+                } catch (error) {
+                    showNotification('Ошибка при отправке сообщения');
+                }
+            }
+        }
+
+        async function renderUserProfile(username) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const user = await api.getUserProfile(username, token);
+                const profileContent = `
+                    <h2>${user.username} ${user.icon} ${user.mood}</h2>
+                    <p>Возраст: ${user.age}</p>
+                    <p>Статус: ${user.isVerified ? 'Верифицирован' : 'Не верифицирован'}</p>
+                    <p>Друзья: ${user.friends.length}</p>
+                    <p>Группы: ${user.groups.length}</p>
+                    ${currentUser && currentUser.username !== user.username ? `
+                        ${currentUser.friends.includes(user.username) ?
+                            `<button class="btn" onclick="startChat('${user.username}')">Отправить сообщение</button>` :
+                            `<button class="btn" onclick="sendFriendRequest('${user.username}')">Добавить в друзья</button>`
+                        }
+                    ` : ''}
+                    <h3>Последние посты:</h3>
+                    ${renderUserPosts(user.posts)}
+                `;
+                document.getElementById('userProfile').innerHTML = profileContent;
+            } catch (error) {
+                showNotification('Ошибка при загрузке профиля пользователя');
+            }
+        }
+
+        function renderUserPosts(posts) {
+            return posts.map(post => `
+                <div class="post">
+                    <p>${post.content}</p>
+                    <small>${new Date(post.createdAt).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
+
+        function renderNotifications() {
+            if (!currentUser) return;
+            const notificationsContainer = document.getElementById('notificationsContainer');
+            notificationsContainer.innerHTML = currentUser.notifications.map(notification => `
+                <div class="notification">
+                    <p>${notification.message}</p>
+                    <small>${new Date(notification.timestamp).toLocaleString()}</small>
+                    ${notification.type === 'friendRequest' ? `
+                        <div>
+                            <button class="btn" onclick="acceptFriendRequest('${notification.from}')">Принять</button>
+                            <button class="btn" onclick="rejectFriendRequest('${notification.from}')">Отклонить</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function sendFriendRequest(username) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('Пожалуйст, войдите в систему, чтобы отправить заявку в друзья.');
+                return;
+            }
+            try {
+                await api.sendFriendRequest(username, token);
+                showNotification(`Заявка в друзья отправлена пользователю ${username}`);
+            } catch (error) {
+                showNotification('Ошибка при отправке заявки в друзья');
+            }
+        }
+
+        async function acceptFriendRequest(username) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                await api.acceptFriendRequest(username, token);
+                showNotification(`Вы приняли заявку в друзья от ${username}`);
+                renderNotifications();
+                renderFriends();
+            } catch (error) {
+                showNotification('Ошибка при принятии заявки в друзья');
+            }
+        }
+
+        async function rejectFriendRequest(username) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                await api.rejectFriendRequest(username, token);
+                showNotification(`Вы отклонили заявку в друзья от ${username}`);
+                renderNotifications();
+            } catch (error) {
+                showNotification('Ошибка при отклонении заявки в друзья');
+            }
+        }
+
+        function startChat(username) {
+            if (!currentUser) {
+                showNotification('Пожалйста, войдите в систему, чтобы начать чат.');
+                return;
+            }
+            const chatKey = [currentUser.username, username].sort().join('-');
+            if (!chats[chatKey]) {
+                chats[chatKey] = [];
+            }
+            showTab('messages');
+            renderChat(username);
+        }
+
+        function renderChat(username) {
+            const chatKey = [currentUser.username, username].sort().join('-');
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.innerHTML = `
+                <h2>Чат с ${username}</h2>
+                <div id="chatMessages"></div>
+                <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                <button onclick="sendMessage('${username}')">Отправить</button>
+            `;
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = chats[chatKey].map(message => `
+                <div class="message ${message.sender === currentUser.username ? 'sent' : 'received'}">
+                    <strong>${message.sender}:</strong> ${message.text}
+                </div>
+            `).join('');
+        }
+
+        function sendMessage(recipient) {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            if (message) {
+                const chatKey = [currentUser.username, recipient].sort().join('-');
+                chats[chatKey].push({
+                    sender: currentUser.username,
+                    text: message,
+                    timestamp: new Date().toISOString()
+                });
+                messageInput.value = '';
+                renderChat(recipient);
+            }
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('registerModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const response = await api.login(username, password);
+                localStorage.setItem('token', response.token);
+                currentUser = response.user;
+                showNotification('Вы успешно вошли в систему');
+                closeModal('loginModal');
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('registerButton').style.display = 'none';
+                document.getElementById('logoutButton').style.display = 'inline-block';
+                renderFriends();
+                renderChats();
+                showTab('home');
+            } catch (error) {
+                showNotification('Неверное имя пользователя или пароль');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const age = parseInt(document.getElementById('registerAge').value);
+            if (username && password && age) {
+                try {
+                    await api.register(username, password, age);
+                    showNotification('Регистрация успешна. Теперь вы можете войти в систему');
+                    closeModal('registerModal');
+                } catch (error) {
+                    showNotification('Ошибка при регистрации. Возможно, пользователь уже существует');
+                }
+            } else {
+                showNotification('Пожалуйста, заполните все поля');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            showNotification('Вы вышли из системы');
+            document.getElementById('loginButton').style.display = 'inline-block';
+            document.getElementById('registerButton').style.display = 'inline-block';
+            document.getElementById('logoutButton').style.display = 'none';
+            showTab('home');
+        }
+
+        function showNotification(message) {
+            const notificationContainer = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notificationContainer.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        async function renderPosts() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const posts = await api.getPosts(token);
+                const postsContainer = document.getElementById('postsContainer');
+                postsContainer.innerHTML = posts.map(post => `
+                    <div class="post">
+                        <strong>${post.author.username}</strong>
+                        <p>${post.content}</p>
+                        <small>${new Date(post.createdAt).toLocaleString()}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                showNotification('Ошибка при загрузке постов');
+            }
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Здесь можно добавить проверку валидности токена на сервере
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('registerButton').style.display = 'none';
+                document.getElementById('logoutButton').style.display = 'inline-block';
+                renderPosts();
+                renderFriends();
+                renderChats();
+            }
+        }
+
+        // Вызовите эту функцию при загрузке страницы
+        window.onload = checkAuth;
+
+        // Инициализация
+        showTab('home');
+        renderPosts();
+        renderStories();
+        renderFriends();
+        renderChats();
+    </script>
+</body>
+</html>
